@@ -9,11 +9,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Api(value = "Widget Controller", produces = "Widget REST api")
 public class WidgetController {
+
+    @Value("${widget.default.pageSize}")
+    private int defaultPageSize;
 
     private final IWidgetRepository widgetRepository;
 
@@ -34,8 +38,10 @@ public class WidgetController {
     @GetMapping("/widget")
     @ApiOperation("Return a list of all the widgets sorted by zindex")
     @ApiResponse(code = 200, message = "List of widgets")
-    public Widget[] all() {
-        return widgetRepository.all();
+    public Widget[] all(@RequestParam(required = false, defaultValue = "1") int page,
+                        @RequestParam(required = false) Integer pageSize) {
+        int pageSizeWithDefault = pageSize == null ? defaultPageSize : pageSize;
+        return widgetRepository.all(page, pageSizeWithDefault);
     }
 
     @PostMapping("/widget")

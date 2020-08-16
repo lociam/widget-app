@@ -26,15 +26,21 @@ public class InMemoryRepository implements IWidgetRepository {
     }
 
     @Override
-    public Widget[] all() {
-        Widget[] response = new Widget[widgetsByZIndex.size()];
+    public Widget[] all(int page, int pageSize) {
+        int fromIndex = (page - 1) * pageSize;
+        int toIndex = page * pageSize;
+
+        ArrayList<Widget> response = new ArrayList();
         Iterator<Widget> iterator = widgetsByZIndex.descendingIterator();
         int i = 0;
         while(iterator.hasNext()){
-            response[i] = iterator.next();
+            Widget next = iterator.next();
+            if( i >= fromIndex && i < toIndex) {
+                response.add(next);
+            }
             i++;
         }
-        return response;
+        return response.toArray(new Widget[response.size()]);
     }
 
     @Override

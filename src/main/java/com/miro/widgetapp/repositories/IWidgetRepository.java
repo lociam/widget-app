@@ -17,9 +17,11 @@ public interface IWidgetRepository {
 
     /**
      * Returns an array with all the widgets sorted by descending zIndex
+     * @param page which page should be returned
+     * @param pageSize how many items should be returned
      * @return
      */
-    Widget[] all();
+    Widget[] all(int page, int pageSize);
 
     /**
      * Updates the widget identified by id

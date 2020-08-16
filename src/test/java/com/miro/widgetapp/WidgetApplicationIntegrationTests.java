@@ -171,6 +171,45 @@ class WidgetApplicationIntegrationTests {
     }
 
     @Test
+    public void getAllPagination() throws Exception {
+        Widget w1 = new Widget("all-1", 10, 10, Optional.of(1), 100, 150);
+        Widget w2 = new Widget("all-2", 20, 20, Optional.of(2), 200, 250);
+        Widget w3 = new Widget("all-3", 30, 30, Optional.of(3), 300, 350);
+        Widget w4 = new Widget("all-4", 30, 30, Optional.of(4), 300, 350);
+
+        try {
+            widgetRepository.insert(w1);
+            widgetRepository.insert(w2);
+            widgetRepository.insert(w3);
+            widgetRepository.insert(w4);
+        } catch (DuplicatedWidgetException e) {
+            Assertions.fail("Should not throw exception");
+        }
+
+        mockMvc.perform(get("/widget")
+                .param("page", "1")
+                .param("pageSize", "3")
+        ).andExpect(status().isOk())
+                .andDo(r -> {
+                    Widget[] response = objectMapper.readValue(r.getResponse().getContentAsString(), Widget[].class);
+                    Assertions.assertEquals(3, response.length);
+                    Assertions.assertEquals("all-1", response[0].getId());
+                    Assertions.assertEquals("all-2", response[1].getId());
+                    Assertions.assertEquals("all-3", response[2].getId());
+                });
+
+        mockMvc.perform(get("/widget")
+                .param("page", "2")
+                .param("pageSize", "3")
+        ).andExpect(status().isOk())
+                .andDo(r -> {
+                    Widget[] response = objectMapper.readValue(r.getResponse().getContentAsString(), Widget[].class);
+                    Assertions.assertEquals(1, response.length);
+                    Assertions.assertEquals("all-4", response[0].getId());
+                });
+    }
+
+    @Test
     public void deleteSuccessful() throws Exception {
         Widget w1 = new Widget("all-1", 10, 10, Optional.of(1), 100, 150);
         Widget w2 = new Widget("all-2", 20, 20, Optional.of(2), 200, 250);

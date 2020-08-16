@@ -71,7 +71,7 @@ public class InMemoryRepositoryTest {
             repository.insert(w3);
             repository.insert(w4);
 
-            Widget[] widgets = repository.all();
+            Widget[] widgets = repository.all(1, 10);
             Assertions.assertEquals(4, widgets.length, "4 widgets should be returned");
             Assertions.assertEquals("test-id1", widgets[0].getId());
             Assertions.assertEquals(1, widgets[0].getZIndex().get());
@@ -87,7 +87,7 @@ public class InMemoryRepositoryTest {
 
             repository.insert(w5);
 
-            widgets = repository.all();
+            widgets = repository.all(1, 10);
             Assertions.assertEquals(5, widgets.length, "5 widgets should be returned");
             Assertions.assertEquals("test-id1", widgets[0].getId());
             Assertions.assertEquals(1, widgets[0].getZIndex().get());
@@ -108,6 +108,8 @@ public class InMemoryRepositoryTest {
             Assertions.fail("It should not throw a duplicated exception");
         }
     }
+
+
 
     @Test
     public void duplicateInsertException() {
@@ -172,7 +174,7 @@ public class InMemoryRepositoryTest {
             Assertions.assertEquals(1000, returned.getWidth(), "The widths should be equal");
             Assertions.assertEquals(1500, returned.getHeight(), "The heights should be equal");
 
-            Widget[] widgets = repository.all();
+            Widget[] widgets = repository.all(1, 10);
             Assertions.assertEquals(3, widgets.length, "3 widgets should be returned");
             Assertions.assertEquals("test-id2", widgets[0].getId());
             Assertions.assertEquals(2, widgets[0].getZIndex().get());
@@ -227,6 +229,48 @@ public class InMemoryRepositoryTest {
             repository.delete(w2.getId());
             Assertions.fail("It should throw a not found exception");
         } catch (WidgetNotFoundException e) {
+        }
+    }
+
+    @Test
+    public void pagination() {
+        Widget[] widgets = new Widget[10];
+        for(int i=0; i<widgets.length; i++){
+            widgets[i] = new Widget("id-"+i, i, i, Optional.of(i), i, i);
+        }
+
+        try {
+            for(Widget w: widgets) {
+                repository.insert(w);
+            }
+
+            Widget[] response = repository.all(1, 3);
+            Assertions.assertEquals(3, response.length);
+            Assertions.assertEquals("id-0", response[0].getId());
+            Assertions.assertEquals("id-1", response[1].getId());
+            Assertions.assertEquals("id-2", response[2].getId());
+
+            response = repository.all(2, 3);
+            Assertions.assertEquals(3, response.length);
+            Assertions.assertEquals("id-3", response[0].getId());
+            Assertions.assertEquals("id-4", response[1].getId());
+            Assertions.assertEquals("id-5", response[2].getId());
+
+            response = repository.all(3, 3);
+            Assertions.assertEquals(3, response.length);
+            Assertions.assertEquals("id-6", response[0].getId());
+            Assertions.assertEquals("id-7", response[1].getId());
+            Assertions.assertEquals("id-8", response[2].getId());
+
+            response = repository.all(4, 3);
+            Assertions.assertEquals(1, response.length);
+            Assertions.assertEquals("id-9", response[0].getId());
+
+            response = repository.all(1, 15);
+            Assertions.assertEquals(10, response.length);
+
+        } catch (DuplicatedWidgetException e) {
+            Assertions.fail("It should not throw a duplicated exception");
         }
     }
 }
