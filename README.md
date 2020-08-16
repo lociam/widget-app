@@ -24,6 +24,11 @@ After running it, you can find the documentation at:
 `http://localhost:8080/swagger-ui/
 `
 
+You can choose which DB implementation should be used by 
+modifying the property `widget.repository` in the application.properties.
+If you use `widget.repository=mem` it will use the InMemory implementation.
+If you use `widget.repository=db` it will use the H2 DB implementation.
+
 ## Project structure
 
 ```

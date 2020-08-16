@@ -55,6 +55,10 @@ public class Widget {
         this.height = height;
     }
 
+    public Widget() {
+
+    }
+
     /**
      * Returns the unique id
      *

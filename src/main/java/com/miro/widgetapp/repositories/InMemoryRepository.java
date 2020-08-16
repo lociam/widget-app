@@ -3,15 +3,23 @@ package com.miro.widgetapp.repositories;
 import com.miro.widgetapp.exceptions.DuplicatedWidgetException;
 import com.miro.widgetapp.exceptions.WidgetNotFoundException;
 import com.miro.widgetapp.models.Widget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+/**
+ * This repository uses standard Java data structures to store the widgets
+ */
 public class InMemoryRepository implements IWidgetRepository {
+    Logger logger = LoggerFactory.getLogger(InMemoryRepository.class);
 
     private HashMap<String, Widget> widgets;
     private LinkedList<Widget> widgetsByZIndex;
 
     public InMemoryRepository() {
+        logger.info("Starting in memory repository....");
+
         widgets = new HashMap<>();
         widgetsByZIndex = new LinkedList<>();
     }
